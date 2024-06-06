@@ -15,6 +15,10 @@ class TodoList extends Component
   public $name;
 
   public $search;
+  public $updateId;
+  #[Rule('required|min:3|max:50')]
+  public $updateName;
+
 
   public function messages()
   {
@@ -31,6 +35,29 @@ class TodoList extends Component
     Todo::create($validated);
     $this->reset('name');
     session()->flash('success', 'Tersimpan.');
+    $this->resetPage();
+  }
+
+  public function edit(Todo $todo)
+  {
+    $this->updateId = $todo->id;
+    $this->updateName = $todo->name;
+  }
+
+  public function update()
+  {
+    $this->validateOnly('updateName');
+    $todo = Todo::find($this->updateId);
+    if ($todo) {
+      $todo->name = $this->updateName;
+      $todo->save();
+    }
+    $this->cancel();
+  }
+
+  public function cancel()
+  {
+    $this->reset('updateId', 'updateName');
   }
 
   public function toggle(Todo $todo)
@@ -39,15 +66,20 @@ class TodoList extends Component
     $todo->save();
   }
 
-  public function delete(Todo $todo)
+  public function destroy($id)
   {
-    $todo->delete();
+    try {
+      ToDo::findOrFail($id)->delete();
+    } catch (\Exception $e) {
+      session()->flash('error', 'Gagal menghapus.');
+      return;
+    }
   }
 
   public function render()
   {
     return view('livewire.todo-list', [
-      'todos' => Todo::latest()->where('name', 'like', "%{$this->search}%")->paginate(5)
+      'todos' => Todo::orderBy('completed', 'asc')->latest()->where('name', 'like', "%{$this->search}%")->paginate(5)
     ]);
   }
 }

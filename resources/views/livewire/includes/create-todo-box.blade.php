@@ -10,7 +10,7 @@
             <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">*
               Todo </label>
             <input wire:model="name" type="text" id="title" placeholder="Todo.."
-              class="bg-gray-100  text-gray-900 text-sm rounded block w-full p-2.5">
+              class="bg-gray-100  text-gray-900 text-sm rounded block w-full p-2.5 @error('name') border border-red-500 @enderror"">
             @error('name')
               <span class="text-red-500 text-xs mt-3 block ">{{ $message }}</span>
             @enderror
