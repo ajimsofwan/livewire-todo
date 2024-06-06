@@ -14,7 +14,7 @@ class TodoList extends Component
   #[Rule('required|min:3|max:50')]
   public $name;
 
-  public $search = 1;
+  public $search;
 
   public function messages()
   {
@@ -31,6 +31,17 @@ class TodoList extends Component
     Todo::create($validated);
     $this->reset('name');
     session()->flash('success', 'Tersimpan.');
+  }
+
+  public function toggle(Todo $todo)
+  {
+    $todo->completed = !$todo->completed;
+    $todo->save();
+  }
+
+  public function delete(Todo $todo)
+  {
+    $todo->delete();
   }
 
   public function render()
